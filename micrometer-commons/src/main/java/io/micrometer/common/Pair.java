@@ -21,17 +21,17 @@ package io.micrometer.common;
  * @author Jon Schneider
  * @since 2.0.0
  */
-public interface Tag extends Comparable<Tag> {
+public interface Pair extends Comparable<Pair> {
     String getKey();
 
     String getValue();
 
-    static Tag of(String key, String value) {
-        return new ImmutableTag(key, value);
+    static Pair of(String key, String value) {
+        return new ImmutablePair(key, value);
     }
 
     @Override
-    default int compareTo(Tag o) {
+    default int compareTo(Pair o) {
         return getKey().compareTo(o.getKey());
     }
 

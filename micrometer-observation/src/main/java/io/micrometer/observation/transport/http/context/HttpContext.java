@@ -16,7 +16,7 @@
 package io.micrometer.observation.transport.http.context;
 
 import io.micrometer.observation.Observation;
-import io.micrometer.common.Tags;
+import io.micrometer.common.Pairs;
 import io.micrometer.observation.transport.http.HttpRequest;
 import io.micrometer.observation.transport.http.HttpResponse;
 import io.micrometer.observation.transport.http.tags.HttpTagsProvider;
@@ -79,7 +79,7 @@ public abstract class HttpContext<REQ extends HttpRequest, RES extends HttpRespo
 
     @NonNull
     @Override
-    public Tags getLowCardinalityTags() {
+    public Pairs getLowCardinalityTags() {
         return this.tagsProvider.getLowCardinalityTags(getRequest(), getResponse(), null);
     }
 }

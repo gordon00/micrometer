@@ -15,7 +15,7 @@
  */
 package io.micrometer.observation.transport.http.tags;
 
-import io.micrometer.common.Tags;
+import io.micrometer.common.Pairs;
 import io.micrometer.observation.transport.http.HttpRequest;
 import io.micrometer.observation.transport.http.HttpResponse;
 
@@ -27,13 +27,13 @@ import io.micrometer.observation.transport.http.HttpResponse;
  */
 public class DefaultHttpTagsProvider implements HttpTagsProvider {
     @Override
-    public Tags getLowCardinalityTags(HttpRequest request, HttpResponse response, Throwable exception) {
-        return Tags.of(HttpTags.method(request), HttpTags.uri(request), HttpTags.status(response),
+    public Pairs getLowCardinalityTags(HttpRequest request, HttpResponse response, Throwable exception) {
+        return Pairs.of(HttpTags.method(request), HttpTags.uri(request), HttpTags.status(response),
                 HttpTags.outcome(response), HttpTags.exception(exception));
     }
 
     @Override
-    public Tags getHighCardinalityTags(HttpRequest request, HttpResponse response, Throwable exception) {
-        return Tags.empty();
+    public Pairs getHighCardinalityTags(HttpRequest request, HttpResponse response, Throwable exception) {
+        return Pairs.empty();
     }
 }

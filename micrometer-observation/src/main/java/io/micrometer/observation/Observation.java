@@ -29,8 +29,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.micrometer.common.Tag;
-import io.micrometer.common.Tags;
+import io.micrometer.common.Pair;
+import io.micrometer.common.Pairs;
 import io.micrometer.observation.lang.NonNull;
 import io.micrometer.observation.lang.Nullable;
 
@@ -130,7 +130,7 @@ public interface Observation {
      * @param tag tag
      * @return this
      */
-    Observation lowCardinalityTag(Tag tag);
+    Observation lowCardinalityTag(Pair tag);
 
     /**
      * Sets a low cardinality tag. Low cardinality means that this tag
@@ -142,7 +142,7 @@ public interface Observation {
      * @return this
      */
     default Observation lowCardinalityTag(String key, String value) {
-        return lowCardinalityTag(Tag.of(key, value));
+        return lowCardinalityTag(Pair.of(key, value));
     }
 
     /**
@@ -153,7 +153,7 @@ public interface Observation {
      * @param tag tag
      * @return this
      */
-    Observation highCardinalityTag(Tag tag);
+    Observation highCardinalityTag(Pair tag);
 
     /**
      * Sets a high cardinality tag. High cardinality means that this tag
@@ -165,7 +165,7 @@ public interface Observation {
      * @return this
      */
     default Observation highCardinalityTag(String key, String value) {
-        return highCardinalityTag(Tag.of(key, value));
+        return highCardinalityTag(Pair.of(key, value));
     }
 
     /**
@@ -452,9 +452,9 @@ public interface Observation {
         @Nullable
         private Throwable error;
 
-        private final Set<Tag> lowCardinalityTags = new LinkedHashSet<>();
+        private final Set<Pair> lowCardinalityTags = new LinkedHashSet<>();
 
-        private final Set<Tag> highCardinalityTags = new LinkedHashSet<>();
+        private final Set<Pair> highCardinalityTags = new LinkedHashSet<>();
 
         /**
          * The observation name.
@@ -616,7 +616,7 @@ public interface Observation {
          *
          * @param tag a tag
          */
-        void addLowCardinalityTag(Tag tag) {
+        void addLowCardinalityTag(Pair tag) {
             this.lowCardinalityTags.add(tag);
         }
 
@@ -626,7 +626,7 @@ public interface Observation {
          *
          * @param tag a tag
          */
-        void addHighCardinalityTag(Tag tag) {
+        void addHighCardinalityTag(Pair tag) {
             this.highCardinalityTags.add(tag);
         }
 
@@ -635,7 +635,7 @@ public interface Observation {
          *
          * @param tags collection of tags
          */
-        void addLowCardinalityTags(Tags tags) {
+        void addLowCardinalityTags(Pairs tags) {
             tags.stream().forEach(this::addLowCardinalityTag);
         }
 
@@ -644,22 +644,22 @@ public interface Observation {
          *
          * @param tags collection of tags
          */
-        void addHighCardinalityTags(Tags tags) {
+        void addHighCardinalityTags(Pairs tags) {
             tags.stream().forEach(this::addHighCardinalityTag);
         }
 
         @NonNull
-        public Tags getLowCardinalityTags() {
-            return Tags.of(this.lowCardinalityTags);
+        public Pairs getLowCardinalityTags() {
+            return Pairs.of(this.lowCardinalityTags);
         }
 
         @NonNull
-        public Tags getHighCardinalityTags() {
-            return Tags.of(this.highCardinalityTags);
+        public Pairs getHighCardinalityTags() {
+            return Pairs.of(this.highCardinalityTags);
         }
 
         @NonNull
-        public Tags getAllTags() {
+        public Pairs getAllTags() {
             return this.getLowCardinalityTags().and(this.getHighCardinalityTags());
         }
 
@@ -673,7 +673,7 @@ public interface Observation {
                     ", map=" + toString(map);
         }
 
-        private String toString(Collection<Tag> tags) {
+        private String toString(Collection<Pair> tags) {
             return tags.stream()
                     .map(tag -> String.format("%s='%s'", tag.getKey(), tag.getValue()))
                     .collect(Collectors.joining(", ", "[", "]"));
@@ -721,8 +721,8 @@ public interface Observation {
          *
          * @return tags
          */
-        default Tags getLowCardinalityTags(T context) {
-            return Tags.empty();
+        default Pairs getLowCardinalityTags(T context) {
+            return Pairs.empty();
         }
 
         /**
@@ -730,8 +730,8 @@ public interface Observation {
          *
          * @return tags
          */
-        default Tags getHighCardinalityTags(T context) {
-            return Tags.empty();
+        default Pairs getHighCardinalityTags(T context) {
+            return Pairs.empty();
         }
 
         /**
@@ -767,11 +767,11 @@ public interface Observation {
             }
 
             @Override
-            public Tags getLowCardinalityTags(Context context) {
+            public Pairs getLowCardinalityTags(Context context) {
                 return getProvidersForContext(context)
                         .map(tagsProvider -> tagsProvider.getLowCardinalityTags(context))
-                        .reduce(Tags::and)
-                        .orElse(Tags.empty());
+                        .reduce(Pairs::and)
+                        .orElse(Pairs.empty());
             }
 
             private Stream<TagsProvider> getProvidersForContext(Context context) {
@@ -779,11 +779,11 @@ public interface Observation {
             }
 
             @Override
-            public Tags getHighCardinalityTags(Context context) {
+            public Pairs getHighCardinalityTags(Context context) {
                 return getProvidersForContext(context)
                         .map(tagsProvider -> tagsProvider.getHighCardinalityTags(context))
-                        .reduce(Tags::and)
-                        .orElse(Tags.empty());
+                        .reduce(Pairs::and)
+                        .orElse(Pairs.empty());
             }
 
             @Override

@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.micrometer.observation.Observation;
-import io.micrometer.common.Tag;
-import io.micrometer.common.Tags;
+import io.micrometer.common.Pair;
+import io.micrometer.common.Pairs;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractThrowableAssert;
 
@@ -136,7 +136,7 @@ public class ObservationContextAssert<SELF extends ObservationContextAssert<SELF
 
     public SELF hasNoTags() {
         isNotNull();
-        Tags tags = this.actual.getAllTags();
+        Pairs tags = this.actual.getAllTags();
         if (tags.stream().findAny().isPresent()) {
             failWithMessage("Observation should have no tags but has <%s>", tags);
         }
@@ -145,7 +145,7 @@ public class ObservationContextAssert<SELF extends ObservationContextAssert<SELF
 
     public SELF hasAnyTags() {
         isNotNull();
-        Tags tags = this.actual.getAllTags();
+        Pairs tags = this.actual.getAllTags();
         if (!tags.stream().findAny().isPresent()) {
             failWithMessage("Observation should have any tags but has none");
         }
@@ -153,11 +153,11 @@ public class ObservationContextAssert<SELF extends ObservationContextAssert<SELF
     }
 
     private List<String> lowCardinalityTagKeys() {
-        return this.actual.getLowCardinalityTags().stream().map(Tag::getKey).collect(Collectors.toList());
+        return this.actual.getLowCardinalityTags().stream().map(Pair::getKey).collect(Collectors.toList());
     }
 
     private List<String> highCardinalityTagKeys() {
-        return this.actual.getHighCardinalityTags().stream().map(Tag::getKey).collect(Collectors.toList());
+        return this.actual.getHighCardinalityTags().stream().map(Pair::getKey).collect(Collectors.toList());
     }
 
     public SELF hasLowCardinalityTagWithKey(String key) {
@@ -189,7 +189,7 @@ public class ObservationContextAssert<SELF extends ObservationContextAssert<SELF
     public SELF doesNotHaveLowCardinalityTag(String key, String value) {
         isNotNull();
         doesNotHaveLowCardinalityTagWithKey(key);
-        Optional<Tag> optional = this.actual.getLowCardinalityTags().stream().filter(tag -> tag.getKey().equals(key)).findFirst();
+        Optional<Pair> optional = this.actual.getLowCardinalityTags().stream().filter(tag -> tag.getKey().equals(key)).findFirst();
         if (!optional.isPresent()) {
             return (SELF) this;
         }
@@ -230,7 +230,7 @@ public class ObservationContextAssert<SELF extends ObservationContextAssert<SELF
     public SELF doesNotHaveHighCardinalityTag(String key, String value) {
         isNotNull();
         doesNotHaveHighCardinalityTagWithKey(key);
-        Optional<Tag> optional = this.actual.getHighCardinalityTags().stream().filter(tag -> tag.getKey().equals(key)).findFirst();
+        Optional<Pair> optional = this.actual.getHighCardinalityTags().stream().filter(tag -> tag.getKey().equals(key)).findFirst();
         if (!optional.isPresent()) {
             return (SELF) this;
         }

@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationRegistry;
-import io.micrometer.common.Tag;
-import io.micrometer.common.Tags;
+import io.micrometer.common.Pair;
+import io.micrometer.common.Pairs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -395,9 +395,9 @@ public abstract class ObservationRegistryCompatibilityKit {
         Exception exception = new IOException("simulated");
         Observation observation = Observation.start("test.observation", testContext, registry)
                 .lowCardinalityTag("lcTag1", "1")
-                .lowCardinalityTag(Tag.of("lcTag2", "2"))
+                .lowCardinalityTag(Pair.of("lcTag2", "2"))
                 .highCardinalityTag("hcTag1", "3")
-                .highCardinalityTag(Tag.of("hcTag2", "4"))
+                .highCardinalityTag(Pair.of("hcTag2", "4"))
                 .tagsProvider(new TestTagsProvider("local"))
                 .tagsProvider(new UnsupportedTagsProvider("local"))
                 .contextualName("test.observation.42")
@@ -408,27 +408,27 @@ public abstract class ObservationRegistryCompatibilityKit {
             assertThat(context).isSameAs(testContext);
             assertThat(context.getName()).isEqualTo("test.observation");
             assertThat(context.getLowCardinalityTags()).containsExactlyInAnyOrder(
-                    Tag.of("lcTag1", "1"),
-                    Tag.of("lcTag2", "2"),
-                    Tag.of("local.context.class", "TestContext"),
-                    Tag.of("global.context.class", "TestContext")
+                    Pair.of("lcTag1", "1"),
+                    Pair.of("lcTag2", "2"),
+                    Pair.of("local.context.class", "TestContext"),
+                    Pair.of("global.context.class", "TestContext")
             );
             assertThat(context.getHighCardinalityTags()).containsExactlyInAnyOrder(
-                    Tag.of("hcTag1", "3"),
-                    Tag.of("hcTag2", "4"),
-                    Tag.of("local.uuid", testContext.uuid),
-                    Tag.of("global.uuid", testContext.uuid)
+                    Pair.of("hcTag1", "3"),
+                    Pair.of("hcTag2", "4"),
+                    Pair.of("local.uuid", testContext.uuid),
+                    Pair.of("global.uuid", testContext.uuid)
             );
 
             assertThat(context.getAllTags()).containsExactlyInAnyOrder(
-                    Tag.of("lcTag1", "1"),
-                    Tag.of("lcTag2", "2"),
-                    Tag.of("local.context.class", "TestContext"),
-                    Tag.of("global.context.class", "TestContext"),
-                    Tag.of("hcTag1", "3"),
-                    Tag.of("hcTag2", "4"),
-                    Tag.of("local.uuid", testContext.uuid),
-                    Tag.of("global.uuid", testContext.uuid)
+                    Pair.of("lcTag1", "1"),
+                    Pair.of("lcTag2", "2"),
+                    Pair.of("local.context.class", "TestContext"),
+                    Pair.of("global.context.class", "TestContext"),
+                    Pair.of("hcTag1", "3"),
+                    Pair.of("hcTag2", "4"),
+                    Pair.of("local.uuid", testContext.uuid),
+                    Pair.of("global.uuid", testContext.uuid)
             );
 
             assertThat((String) context.get("context.field")).isEqualTo("42");
@@ -458,13 +458,13 @@ public abstract class ObservationRegistryCompatibilityKit {
         }
 
         @Override
-        public Tags getLowCardinalityTags(TestContext context) {
-            return Tags.of(this.id + "." + "context.class", TestContext.class.getSimpleName());
+        public Pairs getLowCardinalityTags(TestContext context) {
+            return Pairs.of(this.id + "." + "context.class", TestContext.class.getSimpleName());
         }
 
         @Override
-        public Tags getHighCardinalityTags(TestContext context) {
-            return Tags.of(this.id + "." + "uuid", context.uuid);
+        public Pairs getHighCardinalityTags(TestContext context) {
+            return Pairs.of(this.id + "." + "uuid", context.uuid);
         }
 
         @Override
@@ -485,13 +485,13 @@ public abstract class ObservationRegistryCompatibilityKit {
         }
 
         @Override
-        public Tags getLowCardinalityTags(Observation.Context context) {
-            return Tags.of(this.id + "." + "unsupported.lc", "unsupported");
+        public Pairs getLowCardinalityTags(Observation.Context context) {
+            return Pairs.of(this.id + "." + "unsupported.lc", "unsupported");
         }
 
         @Override
-        public Tags getHighCardinalityTags(Observation.Context context) {
-            return Tags.of(this.id + "." + "unsupported.hc", "unsupported");
+        public Pairs getHighCardinalityTags(Observation.Context context) {
+            return Pairs.of(this.id + "." + "unsupported.hc", "unsupported");
         }
 
         @Override
